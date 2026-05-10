@@ -12,7 +12,30 @@ import { handleClerkWebhook } from "./controllers/authController.js";
 export function createApp() {
   const app = express();
 
-  app.use(cors({ origin: env.FRONTEND_ORIGIN, credentials: true }));
+  const allowedOrigins = (env.FRONTEND_ORIGIN || "")
+    .split(",")
+    .map((o) => o.trim())
+    .filter(Boolean);
+
+  const corsOptions: cors.CorsOptions = {
+    credentials: true,
+    origin(origin, callback) {
+      // Non-browser clients (curl/Postman) often send no Origin.
+      if (!origin) return callback(null, true);
+
+      // If no origins are configured, fail closed for browsers.
+      if (allowedOrigins.length === 0) return callback(new Error("CORS: no allowed origins configured"));
+
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error(`CORS: origin not allowed: ${origin}`));
+    },
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    optionsSuccessStatus: 204,
+  };
+
+  app.use(cors(corsOptions));
+  app.options("*", cors(corsOptions));
 
   // Clerk webhook must receive the raw body for signature verification —
   // mount it before express.json() with its own raw body parser.
