@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc && node scripts/copy-openapi.mjs",
-    "start": "node src/server.js"
+    "start": "node dist/server.js"
   },
   "dependencies": {
     "@clerk/express": "^1.7.0",
