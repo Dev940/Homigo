@@ -1,0 +1,81 @@
+{
+  "paths": {
+    "/api/{table}": {
+      "get": {
+        "tags": ["CRUD"],
+        "summary": "List rows for a configured table",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "table", "required": true, "schema": { "type": "string" } },
+          { "in": "query", "name": "page", "schema": { "type": "integer" } },
+          { "in": "query", "name": "limit", "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "Paginated rows" }
+        }
+      },
+      "post": {
+        "tags": ["CRUD"],
+        "summary": "Insert row",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "in": "path", "name": "table", "required": true, "schema": { "type": "string" } }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "type": "object", "additionalProperties": true }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Created" }
+        }
+      }
+    },
+    "/api/{table}/{id}": {
+      "get": {
+        "tags": ["CRUD"],
+        "summary": "Get row by primary key",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "table", "required": true, "schema": { "type": "string" } },
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Row" }
+        }
+      },
+      "patch": {
+        "tags": ["CRUD"],
+        "summary": "Update row",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "table", "required": true, "schema": { "type": "string" } },
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "type": "object", "additionalProperties": true }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Updated" }
+        }
+      },
+      "delete": {
+        "tags": ["CRUD"],
+        "summary": "Delete row",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "in": "path", "name": "table", "required": true, "schema": { "type": "string" } },
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "204": { "description": "Deleted" }
+        }
+      }
+    }
+  }
+}

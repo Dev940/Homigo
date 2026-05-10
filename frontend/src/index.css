@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-surface font-body text-on-surface antialiased;
+  }
+
+  input,
+  select,
+  textarea {
+    @apply w-full rounded-lg bg-surface-container-highest px-4 py-3 text-sm outline-none ring-0 transition focus:ring-2 focus:ring-primary/40;
+  }
+
+  button,
+  a {
+    @apply transition;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-lg bg-surface-container-lowest p-6 shadow-ambient;
+  }
+
+  .btn-primary {
+    @apply rounded-full bg-gradient-to-br from-primary to-primary-container px-6 py-3 font-bold text-white hover:shadow-ambient active:scale-95;
+  }
+
+  .btn-tonal {
+    @apply rounded-full bg-surface-container-high px-6 py-3 font-bold text-on-surface hover:bg-surface-container-highest active:scale-95;
+  }
+
+  .chip {
+    @apply rounded-full bg-surface-container-high px-4 py-2 text-xs font-bold text-on-surface-variant;
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "paths": {
+    "/api/owners/profile": {
+      "post": {
+        "tags": ["Owners"],
+        "summary": "Owner profile + KYC submission",
+        "description": "Creates or updates user and owner_profiles; inserts kyc_documents. Default kyc pending.",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/OwnerProfileRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Submitted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "owner_id": { "type": "integer" },
+                        "kyc_status": { "type": "string" },
+                        "is_verified": { "type": "boolean" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/properties": {
+      "post": {
+        "tags": ["Properties"],
+        "summary": "Create or update property listing",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PropertyUpsertRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Created" },
+          "200": { "description": "Updated" },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/properties/search": {
+      "post": {
+        "tags": ["Properties"],
+        "summary": "Search listings with filters and pagination",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PropertySearchRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List and total count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "total": { "type": "integer" },
+                    "page": { "type": "integer" },
+                    "limit": { "type": "integer" },
+                    "data": { "type": "array", "items": { "type": "object" } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/properties/{propertyId}": {
+      "get": {
+        "tags": ["Properties"],
+        "summary": "Property detail with owner verification",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "propertyId",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Full property DTO" },
+          "404": { "description": "Not found" }
+        }
+      }
+    }
+  }
+}

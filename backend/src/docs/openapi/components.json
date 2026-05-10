@@ -1,0 +1,185 @@
+{
+  "components": {
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string" }
+        }
+      },
+      "OwnerProfileRequest": {
+        "type": "object",
+        "required": ["basic_info", "owner_profile", "verification_details"],
+        "properties": {
+          "basic_info": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "full_name": { "type": "string" },
+              "email": { "type": "string" },
+              "phone": { "type": "string" },
+              "photo": { "type": "string" },
+              "profile_photo": { "type": "string" }
+            }
+          },
+          "owner_profile": {
+            "type": "object",
+            "required": ["business_name"],
+            "properties": {
+              "business_name": { "type": "string" },
+              "owner_type": { "type": "string", "enum": ["individual", "company"] },
+              "type": { "type": "string" },
+              "bio": { "type": "string" }
+            }
+          },
+          "verification_details": {
+            "type": "object",
+            "properties": {
+              "government_id": {
+                "type": "object",
+                "properties": {
+                  "id_type": { "type": "string", "enum": ["aadhar", "passport", "pan", "dl"] },
+                  "id_number": { "type": "string" },
+                  "document_images": {
+                    "type": "array",
+                    "items": { "type": "string", "format": "uri" }
+                  }
+                }
+              },
+              "address_proof": {
+                "type": "object",
+                "properties": {
+                  "document_type": { "type": "string", "enum": ["utility_bill", "bank_statement"] },
+                  "document_image": { "type": "string", "format": "uri" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "PropertyUpsertRequest": {
+        "type": "object",
+        "required": ["owner_id", "property_details", "location", "pricing"],
+        "properties": {
+          "owner_id": { "oneOf": [{ "type": "string" }, { "type": "integer" }] },
+          "property_id": { "type": "integer" },
+          "listing_type": { "type": "string", "enum": ["rent", "pg", "hostel"] },
+          "promotion_type": { "type": "string", "enum": ["standard", "featured", "premium"] },
+          "status": { "type": "string", "enum": ["active", "paused", "archived"] },
+          "property_details": {
+            "type": "object",
+            "properties": {
+              "title": { "type": "string" },
+              "description": { "type": "string" },
+              "property_type": { "type": "string" },
+              "room_type": { "type": "string" }
+            }
+          },
+          "location": {
+            "type": "object",
+            "properties": {
+              "address": { "type": "string" },
+              "city": { "type": "string" },
+              "state": { "type": "string" },
+              "lat": { "type": "number" },
+              "lng": { "type": "number" }
+            }
+          },
+          "pricing": {
+            "type": "object",
+            "properties": {
+              "monthly_rent": { "type": "number" },
+              "rent": { "type": "number" },
+              "security_deposit": { "type": "number" },
+              "maintenance_charges": { "type": "number" }
+            }
+          },
+          "availability": {
+            "type": "object",
+            "properties": {
+              "available_from": { "type": "string", "format": "date" },
+              "minimum_stay_months": { "type": "integer" },
+              "available_rooms": { "type": "integer" }
+            }
+          },
+          "property_specs": {
+            "type": "object",
+            "properties": {
+              "total_rooms": { "type": "integer" },
+              "available_rooms": { "type": "integer" },
+              "bathrooms": { "type": "integer" },
+              "balcony": { "type": "boolean" }
+            }
+          },
+          "features": {
+            "type": "object",
+            "properties": {
+              "amenities": { "type": "array", "items": { "type": "string" } },
+              "furnishing": { "type": "string" }
+            }
+          },
+          "media": {
+            "type": "object",
+            "properties": {
+              "cover_image": { "type": "string", "format": "uri" },
+              "images": { "type": "array", "items": { "type": "string", "format": "uri" } }
+            }
+          }
+        }
+      },
+      "PropertySearchRequest": {
+        "type": "object",
+        "properties": {
+          "filters": {
+            "type": "object",
+            "properties": {
+              "city": { "type": "string" },
+              "price_range": {
+                "type": "object",
+                "properties": {
+                  "min": { "type": "number" },
+                  "max": { "type": "number" }
+                }
+              },
+              "property_type": { "type": "string" },
+              "room_type": { "type": "string" },
+              "available_rooms": { "type": "integer" },
+              "amenities": { "type": "array", "items": { "type": "string" } },
+              "promotion_type": { "type": "string" }
+            }
+          },
+          "pagination": {
+            "type": "object",
+            "properties": {
+              "page": { "type": "integer", "default": 1 },
+              "limit": { "type": "integer", "default": 10 }
+            }
+          },
+          "sort": {
+            "type": "object",
+            "properties": {
+              "by": { "type": "string", "enum": ["price", "featured"] },
+              "order": { "type": "string", "enum": ["asc", "desc"] }
+            }
+          }
+        }
+      },
+      "UserProfilePayload": {
+        "type": "object",
+        "properties": {
+          "user_id": { "oneOf": [{ "type": "string" }, { "type": "integer" }] },
+          "basic_info": {
+            "type": "object",
+            "properties": {
+              "full_name": { "type": "string" },
+              "email": { "type": "string" },
+              "phone": { "type": "string" },
+              "role": { "type": "string" },
+              "profile_photo": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

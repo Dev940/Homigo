@@ -1,0 +1,55 @@
+import type { Config } from "tailwindcss";
+
+export default {
+  content: ["./index.html", "./src/**/*.{ts,tsx}"],
+  theme: {
+    extend: {
+      colors: {
+        "surface-bright": "#f6faf9",
+        "secondary-container": "#a97dff",
+        secondary: "#7043c2",
+        background: "#f6faf9",
+        "on-surface": "#181c1c",
+        error: "#ba1a1a",
+        primary: "#006565",
+        "secondary-fixed": "#ebddff",
+        "surface-container-low": "#f0f4f3",
+        "primary-fixed-dim": "#76d6d5",
+        "surface-container-highest": "#dfe3e2",
+        outline: "#6e7979",
+        "primary-container": "#008080",
+        "surface-variant": "#dfe3e2",
+        tertiary: "#006923",
+        "on-surface-variant": "#3e4949",
+        "inverse-on-surface": "#edf2f1",
+        "on-secondary": "#ffffff",
+        "surface-container": "#ebefee",
+        "on-background": "#181c1c",
+        "on-primary": "#ffffff",
+        surface: "#f6faf9",
+        "surface-container-lowest": "#ffffff",
+        "inverse-surface": "#2c3131",
+        "outline-variant": "#bdc9c8",
+        "surface-dim": "#d7dbda",
+        "on-secondary-container": "#3d0088",
+        "surface-tint": "#006a6a",
+        "surface-container-high": "#e5e9e8",
+        "error-container": "#ffdad6",
+        "on-secondary-fixed": "#250059",
+      },
+      fontFamily: {
+        headline: ["Manrope", "sans-serif"],
+        body: ["Inter", "sans-serif"],
+        label: ["Inter", "sans-serif"],
+      },
+      boxShadow: {
+        ambient: "0px 12px 32px rgba(24, 28, 28, 0.06)",
+      },
+      borderRadius: {
+        lg: "1rem",
+        xl: "1.25rem",
+      },
+    },
+  },
+  plugins: [],
+} satisfies Config;

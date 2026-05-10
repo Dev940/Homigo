@@ -1,0 +1,114 @@
+{
+  "paths": {
+    "/api/users": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Create user (basic record)",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": { "type": "integer" },
+                  "basic_info": {
+                    "type": "object",
+                    "required": ["email"],
+                    "properties": {
+                      "full_name": { "type": "string" },
+                      "email": { "type": "string" },
+                      "phone": { "type": "string" },
+                      "role": { "type": "string" },
+                      "profile_photo": { "type": "string", "format": "uri" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Created" },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/profile": {
+      "post": {
+        "tags": ["Users", "Onboarding"],
+        "summary": "Create or update full user onboarding profile",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserProfilePayload" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Profile saved" },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/{userId}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get aggregated user profile",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Profile payload" },
+          "404": { "description": "User not found" }
+        }
+      }
+    },
+    "/api/users/search": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Search seeker profiles",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "filters": { "type": "object" },
+                  "pagination": { "type": "object" },
+                  "sort": { "type": "object" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Search results" }
+        }
+      }
+    }
+  }
+}

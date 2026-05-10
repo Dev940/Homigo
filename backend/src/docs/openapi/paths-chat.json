@@ -1,0 +1,199 @@
+{
+  "paths": {
+    "/api/conversations": {
+      "get": {
+        "tags": ["Domain"],
+        "summary": "List conversations for a user",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "user_id",
+            "required": true,
+            "schema": { "oneOf": [{ "type": "integer" }, { "type": "string" }] },
+            "description": "User identifier (numeric user_id, email, or clerk_id)"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Conversation list" },
+          "400": { "description": "Bad request" },
+          "404": { "description": "User not found" }
+        }
+      },
+      "post": {
+        "tags": ["Domain"],
+        "summary": "Create or return an existing 1:1 conversation",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["user1_id", "user2_id"],
+                "properties": {
+                  "user1_id": { "oneOf": [{ "type": "integer" }, { "type": "string" }] },
+                  "user2_id": { "oneOf": [{ "type": "integer" }, { "type": "string" }] }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Existing conversation returned" },
+          "201": { "description": "Conversation created" },
+          "400": {
+            "description": "Bad request",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "404": { "description": "User not found" }
+        }
+      }
+    },
+    "/api/properties/{propertyId}/conversations": {
+      "post": {
+        "tags": ["Properties", "Domain"],
+        "summary": "Start chat from Property Details page (viewer ↔ property owner)",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "propertyId",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["user_id"],
+                "properties": {
+                  "user_id": { "oneOf": [{ "type": "integer" }, { "type": "string" }] }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Existing conversation returned" },
+          "201": { "description": "Conversation created" },
+          "400": { "description": "Bad request" },
+          "404": { "description": "Property or user not found" }
+        }
+      }
+    },
+    "/api/users/{userId}/conversations": {
+      "post": {
+        "tags": ["Users", "Domain"],
+        "summary": "Start chat from User Details page (viewer ↔ target user)",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Target user identifier (numeric user_id, email, or clerk_id)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["user_id"],
+                "properties": {
+                  "user_id": { "oneOf": [{ "type": "integer" }, { "type": "string" }] }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Existing conversation returned" },
+          "201": { "description": "Conversation created" },
+          "400": { "description": "Bad request" },
+          "404": { "description": "User not found" }
+        }
+      }
+    },
+    "/api/messages/{conversationId}": {
+      "get": {
+        "tags": ["Domain"],
+        "summary": "Get messages for a conversation (ascending by timestamp)",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "conversationId",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Message list" },
+          "400": { "description": "Bad request" },
+          "404": { "description": "Conversation not found" }
+        }
+      }
+    },
+    "/api/conversations/{conversationId}/messages": {
+      "get": {
+        "tags": ["Domain"],
+        "summary": "Get messages for a conversation (alias)",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "conversationId",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Message list" }
+        }
+      },
+      "post": {
+        "tags": ["Domain"],
+        "summary": "Post a message to a conversation (persists to Supabase)",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "conversationId",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["sender_id", "receiver_id", "message"],
+                "properties": {
+                  "sender_id": { "oneOf": [{ "type": "integer" }, { "type": "string" }] },
+                  "receiver_id": { "oneOf": [{ "type": "integer" }, { "type": "string" }] },
+                  "message": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Message created" },
+          "400": { "description": "Bad request" },
+          "403": { "description": "Not a participant" },
+          "404": { "description": "Conversation not found" }
+        }
+      }
+    }
+  }
+}
+

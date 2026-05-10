@@ -1,0 +1,26 @@
+{
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["System"],
+        "summary": "Health check",
+        "responses": {
+          "200": {
+            "description": "Service is up",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": { "type": "boolean" },
+                    "service": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
