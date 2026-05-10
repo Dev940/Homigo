@@ -18,11 +18,7 @@ const envSchema = z.object({
   // Clerk backend middleware requires a publishable key as well.
   // Accept standard CLERK_PUBLISHABLE_KEY and fall back to common frontend var names
   // when developing with a shared `.env`.
-  CLERK_PUBLISHABLE_KEY: clerkPublishableKeySchema.default(
-    process.env.CLERK_PUBLISHABLE_KEY ||
-      process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
-      process.env.VITE_CLERK_PUBLISHABLE_KEY
-  ),
+  CLERK_PUBLISHABLE_KEY: clerkPublishableKeySchema,
   CLERK_WEBHOOK_SECRET: z.string().optional(),
   FRONTEND_ORIGIN: z.string().default("http://localhost:5173"),
   CLOUDINARY_CLOUD_NAME: z.string().optional(),
