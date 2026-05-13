@@ -14,6 +14,24 @@ export default function EditProfile({ onNavigate }: PageProps) {
   const [phone, setPhone] = useState("");
   const [bio, setBio] = useState("");
   const [photo, setPhoto] = useState<string | undefined>();
+  
+  // Lifestyle preferences
+  const [smoking, setSmoking] = useState(false);
+  const [drinking, setDrinking] = useState(false);
+  const [sleepSchedule, setSleepSchedule] = useState("flexible");
+  const [cleanliness, setCleanliness] = useState("3");
+  
+  // Roommate preferences
+  const [preferredGender, setPreferredGender] = useState("any");
+  const [minAge, setMinAge] = useState(18);
+  const [maxAge, setMaxAge] = useState(50);
+  const [petFriendly, setPetFriendly] = useState(false);
+  const [additionalNotes, setAdditionalNotes] = useState("");
+  
+  // Preferred locations
+  const [locations, setLocations] = useState<string[]>([]);
+  const [newLocation, setNewLocation] = useState("");
+  
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -27,6 +45,27 @@ export default function EditProfile({ onNavigate }: PageProps) {
       setPhone(data?.basic_info?.phone || "");
       setBio(data?.seeker_profile?.bio || data?.owner_profile?.bio || "");
       setPhoto(data?.basic_info?.profile_photo || userProfile?.imageUrl);
+      
+      // Lifestyle
+      const lifestyle = data?.seeker_profile?.lifestyle_preferences || {};
+      const smokingVal = String(lifestyle.smoking || "").toLowerCase();
+      const drinkingVal = String(lifestyle.drinking || "").toLowerCase();
+      setSmoking(smokingVal === "yes" || smokingVal === "true" || smokingVal === "occasionally");
+      setDrinking(drinkingVal === "yes" || drinkingVal === "true" || drinkingVal === "occasionally");
+      setSleepSchedule(lifestyle.sleep_schedule || "flexible");
+      setCleanliness(String(lifestyle.cleanliness || "3"));
+      
+      // Roommate preferences
+      const roommate = data?.seeker_profile?.roommate_preferences || {};
+      setPreferredGender(roommate.preferred_gender || "any");
+      setMinAge(roommate.age_range?.min || 18);
+      setMaxAge(roommate.age_range?.max || 50);
+      setPetFriendly(roommate.pet_friendly || false);
+      setAdditionalNotes(roommate.additional_notes || "");
+      
+      // Locations
+      const locs = data?.seeker_profile?.preferred_locations || [];
+      setLocations(locs.map((l: any) => l.location_name).filter(Boolean));
     }).catch(() => {});
   }, [userId, userProfile]);
 
@@ -47,6 +86,17 @@ export default function EditProfile({ onNavigate }: PageProps) {
     }
   };
 
+  const addLocation = () => {
+    if (newLocation.trim() && !locations.includes(newLocation.trim())) {
+      setLocations([...locations, newLocation.trim()]);
+      setNewLocation("");
+    }
+  };
+
+  const removeLocation = (loc: string) => {
+    setLocations(locations.filter(l => l !== loc));
+  };
+
   const handleSave = async () => {
     if (!email.trim()) {
       alert("Email is required");
@@ -62,7 +112,25 @@ export default function EditProfile({ onNavigate }: PageProps) {
           phone: phone.trim(),
           profile_photo: photo,
         },
-        seeker_profile: bio.trim() ? { bio: bio.trim() } : undefined,
+        seeker_profile: {
+          bio: bio.trim() || null,
+          lifestyle_preferences: {
+            smoking: smoking ? "yes" : "no",
+            drinking: drinking ? "yes" : "no",
+            sleep_schedule: sleepSchedule,
+            cleanliness: cleanliness,
+          },
+          roommate_preferences: {
+            preferred_gender: preferredGender,
+            age_range: { min: minAge, max: maxAge },
+            pet_friendly: petFriendly,
+            additional_notes: additionalNotes.trim() || null,
+          },
+          preferred_locations: locations.map((loc, idx) => ({
+            location_name: loc,
+            priority: idx + 1,
+          })),
+        },
       });
       onNavigate("profile");
     } catch (err) {
@@ -164,6 +232,167 @@ export default function EditProfile({ onNavigate }: PageProps) {
               className="w-full"
             />
           </label>
+
+          {/* Lifestyle Preferences */}
+          <div className="space-y-4 rounded-xl bg-surface-container-low p-4">
+            <h3 className="font-headline text-lg font-bold">Lifestyle Preferences</h3>
+            
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={smoking}
+                  onChange={(e) => setSmoking(e.target.checked)}
+                  className="h-5 w-5"
+                />
+                <span className="text-sm font-semibold">Smoker</span>
+              </label>
+              
+              <label className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={drinking}
+                  onChange={(e) => setDrinking(e.target.checked)}
+                  className="h-5 w-5"
+                />
+                <span className="text-sm font-semibold">Social Drinker</span>
+              </label>
+              
+              <label className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={petFriendly}
+                  onChange={(e) => setPetFriendly(e.target.checked)}
+                  className="h-5 w-5"
+                />
+                <span className="text-sm font-semibold">Pet-friendly</span>
+              </label>
+            </div>
+
+            <label className="block space-y-2">
+              <span className="text-sm font-semibold text-on-surface-variant">Sleep Schedule</span>
+              <select
+                value={sleepSchedule}
+                onChange={(e) => setSleepSchedule(e.target.value)}
+                className="w-full"
+              >
+                <option value="early_bird">Early Bird</option>
+                <option value="night_owl">Night Owl</option>
+                <option value="flexible">Flexible</option>
+              </select>
+            </label>
+
+            <label className="block space-y-2">
+              <span className="text-sm font-semibold text-on-surface-variant">Cleanliness Level</span>
+              <select
+                value={cleanliness}
+                onChange={(e) => setCleanliness(e.target.value)}
+                className="w-full"
+              >
+                <option value="5">Very Tidy</option>
+                <option value="3">Moderately Tidy</option>
+                <option value="1">Relaxed</option>
+              </select>
+            </label>
+          </div>
+
+          {/* Roommate Preferences */}
+          <div className="space-y-4 rounded-xl bg-surface-container-low p-4">
+            <h3 className="font-headline text-lg font-bold">Roommate Preferences</h3>
+            
+            <label className="block space-y-2">
+              <span className="text-sm font-semibold text-on-surface-variant">Preferred Gender</span>
+              <select
+                value={preferredGender}
+                onChange={(e) => setPreferredGender(e.target.value)}
+                className="w-full"
+              >
+                <option value="any">Any</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </label>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="block space-y-2">
+                <span className="text-sm font-semibold text-on-surface-variant">Min Age</span>
+                <input
+                  type="number"
+                  value={minAge}
+                  onChange={(e) => setMinAge(Number(e.target.value))}
+                  min="18"
+                  max="100"
+                  className="w-full"
+                />
+              </label>
+
+              <label className="block space-y-2">
+                <span className="text-sm font-semibold text-on-surface-variant">Max Age</span>
+                <input
+                  type="number"
+                  value={maxAge}
+                  onChange={(e) => setMaxAge(Number(e.target.value))}
+                  min="18"
+                  max="100"
+                  className="w-full"
+                />
+              </label>
+            </div>
+
+            <label className="block space-y-2">
+              <span className="text-sm font-semibold text-on-surface-variant">Additional Notes</span>
+              <textarea
+                rows={3}
+                value={additionalNotes}
+                onChange={(e) => setAdditionalNotes(e.target.value)}
+                placeholder="Any specific requirements or preferences..."
+                className="w-full"
+              />
+            </label>
+          </div>
+
+          {/* Preferred Locations */}
+          <div className="space-y-4 rounded-xl bg-surface-container-low p-4">
+            <h3 className="font-headline text-lg font-bold">Preferred Locations</h3>
+            
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={newLocation}
+                onChange={(e) => setNewLocation(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addLocation())}
+                placeholder="Add a location..."
+                className="flex-1"
+              />
+              <button
+                type="button"
+                onClick={addLocation}
+                className="btn-tonal"
+              >
+                <MaterialIcon name="add" />
+                Add
+              </button>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {locations.map((loc) => (
+                <span
+                  key={loc}
+                  className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-primary"
+                >
+                  <MaterialIcon name="location_on" className="text-sm" />
+                  {loc}
+                  <button
+                    type="button"
+                    onClick={() => removeLocation(loc)}
+                    className="ml-1 hover:text-error"
+                  >
+                    <MaterialIcon name="close" className="text-sm" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          </div>
 
           {/* Actions */}
           <div className="flex justify-end gap-3 pt-4">
