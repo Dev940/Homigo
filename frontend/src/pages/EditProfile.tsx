@@ -9,6 +9,7 @@ export default function EditProfile({ onNavigate }: PageProps) {
   const { userId, userProfile } = useHomigoAuth();
   const inputRef = useRef<HTMLInputElement>(null);
   
+  const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [bio, setBio] = useState("");
@@ -21,6 +22,7 @@ export default function EditProfile({ onNavigate }: PageProps) {
     if (!userId) return;
     api.getUserDetails(userId).then((res: any) => {
       const data = res?.data;
+      setEmail(data?.basic_info?.email || userProfile?.email || "");
       setFullName(data?.basic_info?.full_name || "");
       setPhone(data?.basic_info?.phone || "");
       setBio(data?.seeker_profile?.bio || data?.owner_profile?.bio || "");
@@ -46,11 +48,16 @@ export default function EditProfile({ onNavigate }: PageProps) {
   };
 
   const handleSave = async () => {
+    if (!email.trim()) {
+      alert("Email is required");
+      return;
+    }
     setSaving(true);
     try {
       await api.saveUserProfile({
         user_id: userId,
         basic_info: {
+          email: email.trim(),
           full_name: fullName.trim(),
           phone: phone.trim(),
           profile_photo: photo,
@@ -58,7 +65,8 @@ export default function EditProfile({ onNavigate }: PageProps) {
         seeker_profile: bio.trim() ? { bio: bio.trim() } : undefined,
       });
       onNavigate("profile");
-    } catch {
+    } catch (err) {
+      console.error("Save error:", err);
       alert("Failed to save profile. Please try again.");
     } finally {
       setSaving(false);
