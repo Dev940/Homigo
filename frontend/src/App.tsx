@@ -9,6 +9,7 @@ import PropertyDetailPage from "./pages/PropertyDetailPage";
 import RoommateDetailPage from "./pages/RoommateDetailPage";
 import Messages from "./pages/Messages";
 import UserProfile from "./pages/UserProfile";
+import EditProfile from "./pages/EditProfile";
 import Step1Registration from "./pages/onboarding/Step1Registration";
 import Step2PhotoUpload from "./pages/onboarding/Step2PhotoUpload";
 import Step3Preferences from "./pages/onboarding/Step3Preferences";
@@ -34,6 +35,7 @@ const validPages = new Set([
   "property",
   "messages",
   "profile",
+  "editProfile",
   "onboarding1",
   "onboarding2",
   "onboarding3",
@@ -50,7 +52,7 @@ type AppProps = {
 };
 
 const publicPages = new Set(["landing", "login", "role"]);
-const topNavPages = new Set(["landing", "dashboard", "roommates", "roommate", "accommodation", "property", "messages", "profile"]);
+const topNavPages = new Set(["landing", "dashboard", "roommates", "roommate", "accommodation", "property", "messages", "profile", "editProfile"]);
 
 export default function App({ clerkEnabled = false }: AppProps) {
   const initialPage = useMemo(() => {
@@ -111,6 +113,8 @@ export default function App({ clerkEnabled = false }: AppProps) {
       return <Messages onNavigate={navigate} />;
     case "profile":
       return <UserProfile onNavigate={navigate} />;
+    case "editProfile":
+      return <EditProfile onNavigate={navigate} />;
     case "onboarding1":
       return <Step1Registration onNavigate={navigate} />;
     case "onboarding2":
