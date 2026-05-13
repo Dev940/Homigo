@@ -312,24 +312,32 @@ export default function UserProfile({ onNavigate }: PageProps) {
   useEffect(() => {
     if (!authReady) return;
     if (userId == null || userId === "") {
+      console.log("[UserProfile] No userId, clearing profile");
       setBackendProfile(null);
       return;
     }
 
     let cancelled = false;
-    console.log("[UserProfile] Fetching profile for userId:", userId);
+    const fetchId = userId; // Capture current userId to detect stale fetches
+    console.log("[UserProfile] Fetching profile for userId:", userId, "(type:", typeof userId, ")");
     
     api
       .getUserDetails(userId)
       .then((res: any) => {
-        const payload = (res?.data ?? null) as BackendFullUserProfile | null;
-        console.log("[UserProfile] Received profile data:", payload);
-        console.log("[UserProfile] Full name from backend:", payload?.basic_info?.full_name);
-        if (!cancelled) setBackendProfile(payload);
+        // Only update if we're still looking at the same user (prevents race conditions)
+        if (!cancelled && fetchId === userId) {
+          const payload = (res?.data ?? null) as BackendFullUserProfile | null;
+          console.log("[UserProfile] ✅ Received profile data for userId:", fetchId, "- full_name:", payload?.basic_info?.full_name);
+          setBackendProfile(payload);
+        } else {
+          console.log("[UserProfile] ⚠️ Ignoring stale fetch for userId:", fetchId, "(current userId is now:", userId, ")");
+        }
       })
       .catch((err) => {
-        console.error("[UserProfile] Failed to fetch profile:", err);
-        if (!cancelled) setBackendProfile(null);
+        console.error("[UserProfile] ❌ Failed to fetch profile for userId:", fetchId, "error:", err);
+        if (!cancelled && fetchId === userId) {
+          setBackendProfile(null);
+        }
       });
 
     return () => {

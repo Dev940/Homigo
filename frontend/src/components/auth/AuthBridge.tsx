@@ -53,7 +53,8 @@ export default function AuthBridge({ onNavigate, onUserIdChange, onUserProfileCh
     if (!isLoaded) return;
     onAuthReady();
     if (isSignedIn && user) {
-      onUserIdChange(user.id);
+      // Don't set Clerk string ID initially - wait for sync to get numeric ID
+      // This prevents unnecessary re-fetches in components that depend on userId
       onUserProfileChange({
         fullName: user.fullName,
         email: user.primaryEmailAddress?.emailAddress,
