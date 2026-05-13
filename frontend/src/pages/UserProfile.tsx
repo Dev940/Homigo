@@ -216,6 +216,8 @@ function PropertyCard({
   p: (typeof DUMMY_USER.properties)[number];
   onNavigate: (pg: string) => void;
 }) {
+  const [imgError, setImgError] = useState(false);
+  
   return (
     <article
       onClick={() => onNavigate("accommodation")}
@@ -223,11 +225,18 @@ function PropertyCard({
     >
       {/* Image */}
       <div className="relative h-44 overflow-hidden bg-surface-container-low">
-        <img
-          src={p.image}
-          alt={p.title}
-          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-        />
+        {!imgError ? (
+          <img
+            src={p.image}
+            alt={p.title}
+            onError={() => setImgError(true)}
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-surface-container">
+            <MaterialIcon name="home" className="text-6xl text-outline" />
+          </div>
+        )}
         <div className="absolute left-3 top-3 flex flex-col gap-1.5">
           {p.verified && (
             <span className="flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-white">
@@ -298,6 +307,7 @@ function PropertyCard({
 export default function UserProfile({ onNavigate }: PageProps) {
   const { userProfile, userId, authReady } = useHomigoAuth();
   const [backendProfile, setBackendProfile] = useState<BackendFullUserProfile | null>(null);
+  const [avatarError, setAvatarError] = useState(false);
 
   useEffect(() => {
     if (!authReady) return;
@@ -455,10 +465,11 @@ export default function UserProfile({ onNavigate }: PageProps) {
             <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
                 <div className="relative shrink-0">
-                  {avatar ? (
+                  {avatar && !avatarError ? (
                     <img
                       src={avatar}
                       alt=""
+                      onError={() => setAvatarError(true)}
                       className="h-28 w-28 rounded-2xl bg-surface-container-low object-cover shadow-md ring-4 ring-white md:h-[7.75rem] md:w-[7.75rem]"
                     />
                   ) : (

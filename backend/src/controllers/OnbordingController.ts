@@ -45,11 +45,12 @@ async function ensureUser(userId: unknown, basicInfo: any) {
 
   if (existing.data) {
     const updatePayload: Record<string, unknown> = {
-      full_name: basicInfo.full_name ?? existing.data.full_name,
-      phone: basicInfo.phone ?? existing.data.phone,
-      role,
       updated_at: new Date().toISOString(),
     };
+    // Only update fields that are provided
+    if (basicInfo.full_name !== undefined) updatePayload.full_name = basicInfo.full_name;
+    if (basicInfo.phone !== undefined) updatePayload.phone = basicInfo.phone;
+    if (basicInfo.role !== undefined) updatePayload.role = role;
     if (clerkId) updatePayload.clerk_id = clerkId;
 
     const updated = await supabase
