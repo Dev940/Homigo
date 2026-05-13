@@ -317,13 +317,18 @@ export default function UserProfile({ onNavigate }: PageProps) {
     }
 
     let cancelled = false;
+    console.log("[UserProfile] Fetching profile for userId:", userId);
+    
     api
       .getUserDetails(userId)
       .then((res: any) => {
         const payload = (res?.data ?? null) as BackendFullUserProfile | null;
+        console.log("[UserProfile] Received profile data:", payload);
+        console.log("[UserProfile] Full name from backend:", payload?.basic_info?.full_name);
         if (!cancelled) setBackendProfile(payload);
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error("[UserProfile] Failed to fetch profile:", err);
         if (!cancelled) setBackendProfile(null);
       });
 
@@ -424,11 +429,15 @@ export default function UserProfile({ onNavigate }: PageProps) {
     };
   }, [backendProfile]);
 
-  // Auth data takes priority; DUMMY fills every field not yet returned from the backend
-  const name = backendProfile?.basic_info?.full_name ?? userProfile?.fullName ?? DUMMY_USER.name;
+  // Backend data takes absolute priority - only fall back to auth context if backend hasn't loaded yet
+  const name = backendProfile !== null
+    ? (backendProfile.basic_info?.full_name || userProfile?.fullName || DUMMY_USER.name)
+    : (userProfile?.fullName ?? DUMMY_USER.name);
   const avatar = backendProfile?.basic_info?.profile_photo ?? userProfile?.imageUrl ?? DUMMY_USER.avatar;
   const email = backendProfile?.basic_info?.email ?? userProfile?.email ?? DUMMY_USER.email;
-  const phone = backendProfile?.basic_info?.phone ?? userProfile?.phone ?? DUMMY_USER.phone;
+  const phone = backendProfile !== null
+    ? (backendProfile.basic_info?.phone || userProfile?.phone || DUMMY_USER.phone)
+    : (userProfile?.phone ?? DUMMY_USER.phone);
 
   const { location, occupation, company, bio, verified, memberSince, stats, seeker, owner, properties, role } = merged;
 

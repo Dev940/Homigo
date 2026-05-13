@@ -102,9 +102,12 @@ export default function EditProfile({ onNavigate }: PageProps) {
       alert("Email is required");
       return;
     }
+    
+    console.log("[EditProfile] Saving profile with full_name:", fullName.trim());
+    
     setSaving(true);
     try {
-      await api.saveUserProfile({
+      const payload = {
         user_id: userId,
         basic_info: {
           email: email.trim(),
@@ -131,10 +134,17 @@ export default function EditProfile({ onNavigate }: PageProps) {
             priority: idx + 1,
           })),
         },
-      });
+      };
+      
+      console.log("[EditProfile] Payload:", JSON.stringify(payload, null, 2));
+      
+      const response = await api.saveUserProfile(payload);
+      
+      console.log("[EditProfile] Save response:", response);
+      
       onNavigate("profile");
     } catch (err) {
-      console.error("Save error:", err);
+      console.error("[EditProfile] Save error:", err);
       alert("Failed to save profile. Please try again.");
     } finally {
       setSaving(false);

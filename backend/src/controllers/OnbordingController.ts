@@ -36,6 +36,8 @@ async function ensureUser(userId: unknown, basicInfo: any) {
   const role = basicInfo.role ?? "seeker";
   const clerkId: string | null = basicInfo.clerk_id ?? null;
 
+  console.log("[ensureUser] Input - userId:", userId, "basicInfo:", JSON.stringify(basicInfo));
+
   // Prefer lookup by clerk_id when provided so we don't create duplicates
   // if the user's email ever changes in Clerk.
   const existing = clerkId
@@ -44,6 +46,8 @@ async function ensureUser(userId: unknown, basicInfo: any) {
   if (existing.error) throw existing.error;
 
   if (existing.data) {
+    console.log("[ensureUser] Found existing user:", existing.data.user_id, "current full_name:", existing.data.full_name);
+    
     const updatePayload: Record<string, unknown> = {
       updated_at: new Date().toISOString(),
     };
@@ -53,6 +57,8 @@ async function ensureUser(userId: unknown, basicInfo: any) {
     if (basicInfo.role !== undefined) updatePayload.role = role;
     if (clerkId) updatePayload.clerk_id = clerkId;
 
+    console.log("[ensureUser] Update payload:", JSON.stringify(updatePayload));
+
     const updated = await supabase
       .from("users")
       .update(updatePayload)
@@ -60,9 +66,13 @@ async function ensureUser(userId: unknown, basicInfo: any) {
       .select("*")
       .single();
     if (updated.error || !updated.data) throw updated.error ?? new Error("Unable to update user");
+    
+    console.log("[ensureUser] Updated user - new full_name:", updated.data.full_name);
     return updated.data;
   }
 
+  console.log("[ensureUser] Creating new user");
+  
   const createPayload: Record<string, unknown> = {
     full_name: basicInfo.full_name ?? null,
     email: basicInfo.email,
