@@ -514,6 +514,7 @@ export default function UserProfile({ onNavigate }: PageProps) {
                 </button>
                 <button
                   type="button"
+                  onClick={() => onNavigate("owner2")}
                   className="btn-primary inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold"
                 >
                   <MaterialIcon name="edit" className="text-lg" />

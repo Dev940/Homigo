@@ -47,7 +47,7 @@ export function createApp() {
   // passthrough mode; requireAuth below handles enforcement.
   app.use(
     clerkMiddleware(
-      env.CLERK_SECRET_KEY
+      env.CLERK_SECRET_KEY && env.CLERK_PUBLISHABLE_KEY
         ? {
             secretKey: env.CLERK_SECRET_KEY,
             publishableKey: env.CLERK_PUBLISHABLE_KEY,
